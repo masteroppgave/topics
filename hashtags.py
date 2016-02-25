@@ -1,4 +1,5 @@
 import json
+import operator
 from collections import Counter
 from collections import defaultdict
 
@@ -21,7 +22,7 @@ def most_common(lines, number_of_results):
 
 	return Counter(hashtags).most_common(number_of_results)
 
-def co_occurrences(lines):
+def co_occurrences(lines, number_of_results=0):
 
 	"""
 	Finds co-occurrences of hashtags in tweets
@@ -37,8 +38,6 @@ def co_occurrences(lines):
 
 		hashtags = [hashtag["text"] for hashtag in tweet["entities"]["hashtags"]]
 
-		print hashtags
-
 		# Build co-occurrence matrix
 
 		for i in range(len(hashtags)-1):
@@ -47,10 +46,23 @@ def co_occurrences(lines):
 				if h1 != h2:
 					com[h1][h2] += 1
 
-	return com
+	most_common = []
+
+	for h1 in com:
+		h1_max = max(com[h1].items(), key=operator.itemgetter(1))
+		for h2 in h1_max:
+			most_common.append(((h1, h2), com[h1][h2]))
+
+	max_hashtags = sorted(most_common, key=operator.itemgetter(1), reverse=True)
+
+	if number_of_results>0:
+		return([m for m in max_hashtags if m[-1]>0][:number_of_results])
+	else:
+		return([m for m in max_hashtags if m[-1]>0])
+
 
 
 if __name__ == "__main__":
 	f = open("29jan_tweets.json", "r")
 
-	print co_occurrences(f.readlines())
+	print (co_occurrences(f.readlines()))
