@@ -63,6 +63,6 @@ def co_occurrences(lines, number_of_results=0):
 
 
 if __name__ == "__main__":
-	f = open("29jan_tweets.json", "r")
+	f = open("superbowltweets.json", "r")
 
-	print (co_occurrences(f.readlines()))
+	print (most_common(f.readlines(), 100))
